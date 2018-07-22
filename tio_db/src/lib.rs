@@ -7,6 +7,7 @@ extern crate chrono;
 extern crate actix;
 extern crate actix_web;
 extern crate uuid;
+extern crate tio_utils;
 
 mod schema;
 pub mod models;
