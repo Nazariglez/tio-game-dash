@@ -2,7 +2,7 @@
 #![allow(non_snake_case)]
 
 use futures::future::{Future};
-use actix_web::{HttpResponse, Error, HttpRequest, error};
+use actix_web::{HttpResponse, Error, HttpRequest};
 use serde::ser::*;
 use std::fmt::{Debug};
 use app::AppState;
@@ -22,47 +22,62 @@ pub struct Res<T: Serialize> {
 }
 
 impl<T: Serialize + Debug> Res<T> {
+    #[inline]
     pub fn create(status: StatusCode, msg: T) -> HttpResponse {
         create_response(status, msg)
     }
 
+    #[inline]
+    pub fn error(status: StatusCode, err: T) -> Error 
+    where
+        T: Send + Sync + Debug + Display + 'static {
+
+        InternalError::new(err, status).into()
+    }
+
+    #[inline]
     pub fn OK(msg: T) -> HttpResponse {
         create_response(StatusCode::OK, msg)
     }
 
     #[inline]
     pub fn BadRequest(err: T) -> Error 
-        where T: Send + Sync + Display {
+    where
+        T: Send + Sync + Debug + Display + 'static {
 
-        error::ErrorBadRequest(err.to_string())
+        ErrorBadRequest(err)
     }
 
     #[inline]
     pub fn Forbidden(err: T) -> Error 
-        where T: Send + Sync + Display {
+    where
+        T: Send + Sync + Debug + Display + 'static {
             
-        error::ErrorForbidden(err.to_string())
+        ErrorForbidden(err)
     }
 
     #[inline]
     pub fn NotFound(err: T) -> Error 
-        where T: Send + Sync + Display {
+    where
+        T: Send + Sync + Debug + Display + 'static {
             
-        error::ErrorNotFound(err.to_string())
+        ErrorNotFound(err)
     }
 
     #[inline]
     pub fn InternalServerError(err: T) -> Error 
-        where T: Send + Sync + Display {
+    where
+        T: Send + Sync + Debug + Display + 'static {
             
-        error::ErrorInternalServerError(err.to_string())
+        ErrorInternalServerError(err)
     }
 
     #[inline]
     pub fn MethodNotAllowed(err: T) -> Error 
-        where T: Send + Sync + Display {
+    where
+        T: Send + Sync + Debug + Display + 'static {
             
-        error::ErrorMethodNotAllowed(err.to_string())
+        ErrorMethodNotAllowed(err)
     }
 }
 
