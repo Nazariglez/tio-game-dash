@@ -99,27 +99,6 @@ pub mod handlers {
         }
     }
 
-    fn validate_password(pass:String) -> Result<(), Error> {
-        if pass.len() < 6 {
-            Err(ErrorBadRequest("Minimum password length is 6"))
-        } else {
-            Ok(())
-        }
-    }
-
-    fn validate_email(email:String) -> Result<(), Error> {
-        if !is_valid_email(&email) {
-            Err(ErrorBadRequest("Invalid email format."))
-        } else {
-            Ok(())
-        }
-    }
-
-    fn hash_password(pass:String) -> Result<String, Error> {
-        bcrypt::hash(pass.as_str(), bcrypt::DEFAULT_COST)
-            .map_err(ErrorInternalServerError)
-    }
-
     //-- Read Implementation
     #[derive(Serialize, Deserialize, Debug)]
     pub struct ReadAdmin {
@@ -241,4 +220,31 @@ pub mod handlers {
         }
     }
 
+
+    //-- utils
+    fn validate_password(pass:String) -> Result<(), Error> {
+        if pass.len() < 6 {
+            Err(ErrorBadRequest("Minimum password length is 6"))
+        } else {
+            Ok(())
+        }
+    }
+
+    fn validate_email(email:String) -> Result<(), Error> {
+        if !is_valid_email(&email) {
+            Err(ErrorBadRequest("Invalid email format."))
+        } else {
+            Ok(())
+        }
+    }
+
+    fn hash_password(pass:String) -> Result<String, Error> {
+        bcrypt::hash(pass.as_str(), bcrypt::DEFAULT_COST)
+            .map_err(ErrorInternalServerError)
+    }
+
+    pub fn compare_password(pass:String, hash:String) -> Result<bool, Error> {
+        bcrypt::verify(pass.as_str(), hash.as_str())
+            .map_err(ErrorInternalServerError)
+    }
 }
