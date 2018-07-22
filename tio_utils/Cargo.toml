@@ -1,0 +1,8 @@
+[package]
+name = "tio_utils"
+version = "0.1.0"
+authors = ["Nazarí González <nazari.nz@gmail.com>"]
+
+[dependencies]
+regex = "1.0.1"
+lazy_static = "1.0.1"

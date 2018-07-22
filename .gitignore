@@ -1,0 +1,5 @@
+./tarentola.toml
+.vscode
+target
+*/**/target
+just_test

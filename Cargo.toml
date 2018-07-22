@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "tio_config",
+    "tio_bin",
+    "tio_api",
+    "tio_db"
+]
