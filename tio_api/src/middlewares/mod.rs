@@ -2,6 +2,8 @@ use actix_web::{HttpResponse, HttpRequest, Result};
 use actix_web::middleware::{Middleware, Response};
 use http::{Res, StatusCode};
 
+pub mod authentication;
+
 pub struct ApiErrorHandler;
 
 impl<S> Middleware<S> for ApiErrorHandler {

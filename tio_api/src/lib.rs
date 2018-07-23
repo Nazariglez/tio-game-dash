@@ -1,7 +1,11 @@
 //#![feature(proc_macro, generators)]
 #[macro_use] extern crate serde_derive;
+#[macro_use] extern crate serde_json;
 #[macro_use] extern crate log;
 //#[macro_use] extern crate futures_await;
+extern crate chrono;
+extern crate time;
+extern crate frank_jwt;
 extern crate serde;
 extern crate actix;
 extern crate actix_web;
@@ -18,4 +22,5 @@ pub mod middlewares;
 pub mod app;
 pub mod router;
 
+mod auth;
 mod http;

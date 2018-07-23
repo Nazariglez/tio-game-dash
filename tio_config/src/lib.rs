@@ -12,6 +12,7 @@ pub struct Config {
     pub server: ConfigServer,
     pub log: ConfigLog,
     pub database: ConfigDatabase,
+    pub auth: ConfigAuth,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -26,6 +27,12 @@ pub struct ConfigDatabase {
     pub password: String,
     pub host: String,
     pub name: String
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct ConfigAuth {
+    pub jwt_secret: String,
+    pub token_expire: i32
 }
 
 pub type ConfigLog = HashMap<String, String>;
@@ -55,6 +62,11 @@ impl Config {
                 password: "".to_string(),
                 host: "localhost".to_string(),
                 name: "".to_string(),
+            },
+
+            auth: ConfigAuth {
+                jwt_secret: "Don't forget to change me!".to_string(),
+                token_expire: 3600
             }
         }
     }

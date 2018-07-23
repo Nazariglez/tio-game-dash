@@ -12,3 +12,7 @@ user = "nazarigonzalez"
 password = "password"
 host = "localhost"
 name = "tio"
+
+[auth]
+jwt_secret = "Don't forget to change me!"
+token_expire = 3600

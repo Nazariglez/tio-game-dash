@@ -11,3 +11,4 @@ lazy_static! {
 pub fn is_valid_email(email: &str) -> bool {
     EMAIL_REGEX.is_match(email)
 }
+
