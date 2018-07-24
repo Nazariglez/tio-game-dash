@@ -1,6 +1,10 @@
+use actix_web::{HttpMessage, Error, HttpRequest};
+use http::*;
+use frank_jwt::{encode, Algorithm, decode, Error as JwtError};
 use chrono::{NaiveDateTime, Utc};
 use time::Duration;
 use tio_config;
+use serde_json;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AuthClaims {
@@ -13,17 +17,6 @@ pub struct AuthClaims {
 }
 
 impl AuthClaims {
-    pub fn new(id: i32) -> AuthClaims {
-        AuthClaims {
-            id: id,
-            exp: get_expire_token_date(tio_config::get().auth.token_expire as i64),
-            admin: None,
-            admin_level: None,
-            dev: None,
-            user: None
-        }
-    }
-
     pub fn admin(id: i32, level: i16) -> AuthClaims {
         AuthClaims {
             id: id,
@@ -54,6 +47,53 @@ impl AuthClaims {
             admin_level: None,
             dev: None,
             user: Some(true)
+        }
+    }
+
+    pub fn to_token(&self) -> Result<String, Error> {
+        let secret = tio_config::get().auth.jwt_secret;
+        encode(json!({}), &secret, &json!(&self), Algorithm::HS256)
+            .map_err(|e|{
+                error!("Can not generate jwt token for {:?}", &self);
+
+                ErrorInternalServerError("Error generating auth token")
+            })
+    }
+
+    pub fn from_token(token:&String) -> Result<AuthClaims, Error> {
+        let secret = tio_config::get().auth.jwt_secret;
+        let (_, payload) = decode(token, &secret, Algorithm::HS256)
+            .map_err(|e|{
+                match e {
+                    JwtError::SignatureExpired => ErrorForbidden("Auth token expired"),
+                    _ => ErrorForbidden("Invalid auth token")
+                }
+            })?;
+
+        let claims: AuthClaims = serde_json::from_value(payload)
+            .map_err(ErrorInternalServerError)?;
+
+        if claims.exp < Utc::now().naive_utc() {
+            Err(ErrorForbidden("Auth token expired"))
+        } else {
+            Ok(claims)
+        }
+    }
+
+    pub fn from_request<S>(req: &HttpRequest<S>) -> Result<AuthClaims, Error> {
+        let headers = req.headers();
+        if let Some(auth) = headers.get("authorization") {
+            let header = auth.to_str().map_err(ErrorForbidden)?;
+                if !header.starts_with("Bearer: ") {
+                Err(ErrorForbidden("Invalid auth token"))
+            } else {
+                let token = header.replace("Bearer: ", "");
+                let claims = AuthClaims::from_token(&token)?;
+
+                Ok(claims)
+            }
+        } else {
+            Err(ErrorForbidden("Invalid authorization header"))
         }
     }
 }
