@@ -15,4 +15,4 @@ name = "tio"
 
 [auth]
 jwt_secret = "Don't forget to change me!"
-token_expire = 3600
+token_expire = 999999999

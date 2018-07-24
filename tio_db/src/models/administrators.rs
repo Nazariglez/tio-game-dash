@@ -16,15 +16,17 @@ pub struct Admin {
 pub struct NewAdmin {
     pub email: String,
     pub password: String,
+    pub level: i16,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime
 }
 
 impl NewAdmin {
-    pub fn new(email:String, pass: String) -> NewAdmin {
+    pub fn new(email:String, pass: String, level: i16) -> NewAdmin {
         NewAdmin {
             email: email,
             password: pass,
+            level: level,
             created_at: Utc::now().naive_utc(),
             updated_at: Utc::now().naive_utc()
         }
@@ -70,7 +72,8 @@ pub mod handlers {
     #[derive(Serialize, Deserialize, Debug)]
     pub struct CreateAdmin {
         pub email: String,
-        pub password: String
+        pub password: String,
+        pub level: Option<i16>
     }
 
     impl Message for CreateAdmin  {
@@ -89,7 +92,7 @@ pub mod handlers {
             let conn = &self.0.get().map_err(ErrorInternalServerError)?;
             let pass = hash_password(create_admin.password.clone())?;
 
-            let new_admin = NewAdmin::new(create_admin.email, pass);
+            let new_admin = NewAdmin::new(create_admin.email, pass, create_admin.level.unwrap_or(1));
             let mut inserted_users = diesel::insert_into(administrators::table)
                 .values(&new_admin)
                 .get_results(conn)

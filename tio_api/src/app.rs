@@ -6,7 +6,7 @@ use num_cpus;
 use tio_config;
 use router;
 use http::{Res, Request, Response};
-use middlewares::{ApiErrorHandler};
+use middlewares::error_handler::{ApiErrorHandler};
 use futures::future::{err};
 
 pub struct AppState {
