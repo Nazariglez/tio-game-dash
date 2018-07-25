@@ -5,7 +5,7 @@ use tio_db::{create_pool, DatabaseParams, ConnDsl};
 use num_cpus;
 use tio_config;
 use router;
-use http::{Res, Request, Response};
+use http::{Res, Request, Response, ErrorNotFound, ErrorMethodNotAllowed};
 use middlewares::error_handler::{ApiErrorHandler};
 use futures::future::{err};
 
@@ -50,9 +50,9 @@ pub fn get() -> App<AppState> {
 }
 
 fn default_not_found(_: Request) -> Response {
-    err(Res::NotFound("Not Found")).responder()
+    err(ErrorNotFound("Not Found")).responder()
 }
 
 fn default_method_not_allowed(_: Request) -> Response {
-    err(Res::MethodNotAllowed("Method not allowed")).responder()
+    err(ErrorMethodNotAllowed("Method not allowed")).responder()
 }

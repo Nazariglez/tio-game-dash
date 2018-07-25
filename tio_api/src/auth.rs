@@ -10,10 +10,10 @@ use serde_json;
 pub struct AuthClaims {
     pub exp: NaiveDateTime,
     pub id: i32,
-    pub admin: Option<bool>,
-    pub admin_level: Option<i16>,
-    pub dev: Option<bool>,
-    pub user: Option<bool>
+    #[serde(skip_serializing_if="Option::is_none")] pub admin: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")] pub admin_level: Option<i16>,
+    #[serde(skip_serializing_if="Option::is_none")] pub dev: Option<bool>,
+    #[serde(skip_serializing_if="Option::is_none")] pub user: Option<bool>
 }
 
 impl AuthClaims {
@@ -65,8 +65,8 @@ impl AuthClaims {
         let (_, payload) = decode(token, &secret, Algorithm::HS256)
             .map_err(|e|{
                 match e {
-                    JwtError::SignatureExpired => ErrorForbidden("Auth token expired"),
-                    _ => ErrorForbidden("Invalid auth token")
+                    JwtError::SignatureExpired => ErrorUnauthorized("Auth token expired"),
+                    _ => ErrorUnauthorized("Invalid auth token")
                 }
             })?;
 
@@ -74,7 +74,7 @@ impl AuthClaims {
             .map_err(ErrorInternalServerError)?;
 
         if claims.exp < Utc::now().naive_utc() {
-            Err(ErrorForbidden("Auth token expired"))
+            Err(ErrorUnauthorized("Auth token expired"))
         } else {
             Ok(claims)
         }
@@ -85,7 +85,7 @@ impl AuthClaims {
         if let Some(auth) = headers.get("authorization") {
             let header = auth.to_str().map_err(ErrorForbidden)?;
                 if !header.starts_with("Bearer: ") {
-                Err(ErrorForbidden("Invalid auth token"))
+                Err(ErrorUnauthorized("Invalid auth token"))
             } else {
                 let token = header.replace("Bearer: ", "");
                 let claims = AuthClaims::from_token(&token)?;
@@ -93,7 +93,7 @@ impl AuthClaims {
                 Ok(claims)
             }
         } else {
-            Err(ErrorForbidden("Invalid authorization header"))
+            Err(ErrorUnauthorized("Invalid authorization header"))
         }
     }
 }

@@ -39,46 +39,6 @@ impl<T: Serialize + Debug> Res<T> {
     pub fn OK(msg: T) -> HttpResponse {
         create_response(StatusCode::OK, msg)
     }
-
-    #[inline]
-    pub fn BadRequest(err: T) -> Error 
-    where
-        T: Send + Sync + Debug + Display + 'static {
-
-        ErrorBadRequest(err)
-    }
-
-    #[inline]
-    pub fn Forbidden(err: T) -> Error 
-    where
-        T: Send + Sync + Debug + Display + 'static {
-            
-        ErrorForbidden(err)
-    }
-
-    #[inline]
-    pub fn NotFound(err: T) -> Error 
-    where
-        T: Send + Sync + Debug + Display + 'static {
-            
-        ErrorNotFound(err)
-    }
-
-    #[inline]
-    pub fn InternalServerError(err: T) -> Error 
-    where
-        T: Send + Sync + Debug + Display + 'static {
-            
-        ErrorInternalServerError(err)
-    }
-
-    #[inline]
-    pub fn MethodNotAllowed(err: T) -> Error 
-    where
-        T: Send + Sync + Debug + Display + 'static {
-            
-        ErrorMethodNotAllowed(err)
-    }
 }
 
 #[inline]
