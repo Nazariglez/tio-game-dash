@@ -5,11 +5,11 @@ authors = ["Nazarí González <nazari.nz@gmail.com>"]
 
 [dependencies]
 log = "0.4.3"
-env_logger = "0.5.10"
+env_logger = "0.5.11"
 #uuid = "0.6.5"
-actix = "0.5.8"
-actix-web = "0.6.14"
-lazy_static = "1.0.1"
+actix = "0.7.2"
+actix-web = "0.7.1"
+lazy_static = "1.0.2"
 serde = "1.0.70"
 serde_derive = "1.0.70"
 #toml = "0.4.6"

@@ -5,7 +5,7 @@ use http::{Res, StatusCode};
 pub struct ApiErrorHandler;
 
 impl<S> Middleware<S> for ApiErrorHandler {
-    fn response(&self, _: &mut HttpRequest<S>, resp: HttpResponse) -> Result<Response> {
+    fn response(&self, _: &HttpRequest<S>, resp: HttpResponse) -> Result<Response> {
         if resp.error().is_some() {
             let status = resp.status();
             let err = resp.error().unwrap().as_response_error();

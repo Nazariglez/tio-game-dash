@@ -1,11 +1,11 @@
-use actix_web::{http::Method, middleware::Middleware};
-use actix_web::dev::ResourceHandler;
+use actix_web::{http::Method};
+use actix_web::dev::Resource;
 use app::AppState;
 use v1::administrators;
 use v1::auth;
 use middlewares::authentication::IsAdmin;
 
-pub fn get<'a> () -> Vec<(&'a str, fn(&mut ResourceHandler<AppState>))> {
+pub fn get<'a> () -> Vec<(&'a str, fn(&mut Resource<AppState>))> {
     vec![
         ("/auth/admin/in", |r| {
             r.post().with_async(auth::admin_login);

@@ -1,4 +1,4 @@
-use actix::{Addr, SyncArbiter, Syn};
+use actix::{Addr, SyncArbiter};
 use actix_web::{App, http, pred, AsyncResponder};
 use actix_web::middleware::{Logger, cors::Cors};
 use tio_db::{create_pool, DatabaseParams, ConnDsl};
@@ -10,7 +10,7 @@ use middlewares::error_handler::{ApiErrorHandler};
 use futures::future::{err};
 
 pub struct AppState {
-    pub db: Addr<Syn, ConnDsl>
+    pub db: Addr<ConnDsl>
 }
 
 pub fn get() -> App<AppState> {
