@@ -1,0 +1,18 @@
+[server]
+ip = "127.0.0.1"
+port = 8000
+
+[log]
+main = "info"
+actix_web = "debug"
+tarentola = "trace"
+
+[database]
+user = "nazarigonzalez"
+password = "password"
+host = "localhost"
+name = "tio"
+
+[auth]
+jwt_secret = "Don't forget to change me!"
+token_expire = 999999999

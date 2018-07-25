@@ -11,7 +11,11 @@ use actix_web::server::HttpServer;
 use tio_db::{check_connection, DatabaseParams, run_migrations};
 use tio_api::app;
 
+#[cfg(debug_assertions)]
 const DEFAULT_CONFIG_FILE: &'static str = "dev.config";
+
+#[cfg(not(debug_assertions))]
+const DEFAULT_CONFIG_FILE: &'static str = "prod.config";
 
 fn main() {
     let config_file = env::args().nth(1).unwrap_or(DEFAULT_CONFIG_FILE.to_string()) + ".toml";
