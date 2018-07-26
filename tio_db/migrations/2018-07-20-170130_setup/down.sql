@@ -2,4 +2,9 @@
 DROP TABLE administrators;
 DROP TABLE developers CASCADE;
 DROP TABLE users;
-DROP TABLE games;
+DROP TABLE apps;
+DROP TABLE keys;
+DROP TABLE categories;
+DROP TABLE apps_categories;
+DROP TABLE tags;
+DROP TABLE apps_tags;

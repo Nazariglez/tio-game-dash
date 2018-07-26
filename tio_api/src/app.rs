@@ -18,7 +18,7 @@ pub fn get() -> App<AppState> {
 
     let conn = create_pool(DatabaseParams::new(cfg.database.user, cfg.database.password, cfg.database.host, cfg.database.name)).unwrap();
     let addr = SyncArbiter::start(
-        num_cpus::get() * 3, //postgress just allow 8 connections? this value must be 8 instead cpus*n? 
+        num_cpus::get() * 3, 
         move || ConnDsl(conn.clone())
     );
 
