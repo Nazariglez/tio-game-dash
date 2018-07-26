@@ -10,6 +10,7 @@ use serde_json;
 pub struct AuthClaims {
     pub exp: NaiveDateTime,
     pub id: i32,
+    
     #[serde(skip_serializing_if="Option::is_none")] pub admin: Option<bool>,
     #[serde(skip_serializing_if="Option::is_none")] pub admin_level: Option<i16>,
     #[serde(skip_serializing_if="Option::is_none")] pub dev: Option<bool>,

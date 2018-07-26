@@ -256,6 +256,19 @@ pub mod handlers {
                 //.optional()
                 .map_err(negotiate_error)?;
 
+            //if the password change, invalidate the session
+            if edit.password.is_some() || edit.email.is_some() {
+                use models::administrator_sessions::*;
+                use schema::administrator_sessions;
+
+                 diesel::update(
+                     administrator_sessions::table.filter(administrator_sessions::dsl::administrator_id.eq(edited_admin.id))
+                 ).set(&EditAdminSession::new(edited_admin.id, false, None))
+                    .execute(conn)
+                    .optional() //is necesarry to avoid the not_found error?
+                    .map_err(negotiate_error)?;
+            }
+
             Ok(edited_admin)
         }
 
@@ -278,6 +291,20 @@ pub mod handlers {
             use schema::administrators;
 
             let conn = &self.0.get().map_err(ErrorInternalServerError)?;
+            
+            /*{ //invalidate the auth session
+                use models::administrator_sessions::*;
+                use schema::administrator_sessions;
+
+                 diesel::update(
+                     administrator_sessions::table.filter(administrator_sessions::dsl::administrator_id.eq(del_admin.id))
+                 ).set(&EditAdminSession::new(del_admin.id, false, None))
+                    .execute(conn)
+                    .optional() //is necesarry to avoid the not_found error?
+                    .map_err(negotiate_error)?;
+            }*/
+        
+
             let filter = administrators::table.filter(administrators::dsl::id.eq(del_admin.id));
             diesel::delete(filter)
                 .execute(conn)
