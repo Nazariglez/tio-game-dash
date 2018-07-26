@@ -5,7 +5,10 @@ use schema::administrators;
 pub struct Admin {
     pub id: i32,
     pub email: String,
+
+    #[serde(skip_serializing)] 
     pub password: String,
+
     pub level: i16, 
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime
@@ -67,6 +70,67 @@ pub mod handlers {
     use bcrypt;
     use models::negotiate_error;
     use tio_utils::is_valid_email;
+
+    //-- Count
+    #[derive(Serialize, Deserialize, Debug)]
+    pub struct CountAdmins;
+    
+    impl Message for CountAdmins {
+        type Result = Result<i64, Error>;
+    }
+
+    impl Handler<CountAdmins> for ConnDsl {
+        type Result = Result<i64, Error>;
+
+        fn handle(&mut self, _: CountAdmins, _: &mut Self::Context) -> Self::Result {
+            use schema::administrators;
+            use diesel::dsl::*;
+            
+            let conn = &self.0.get().map_err(ErrorInternalServerError)?;
+            let c = administrators::table.select(count_star())
+                .first(conn)
+                .map_err(negotiate_error)?;
+
+            Ok(c)
+        }
+    }
+
+    //-- List
+    #[derive(Serialize, Deserialize, Debug)]
+    pub struct ListAdmins {
+        pub page: i64,
+        pub limit: i64,
+        //pub sort_type: String,
+        //pub sort_by: String
+    }
+
+    impl Message for ListAdmins  {
+        type Result = Result<Vec<Admin>, Error>;
+    }
+
+    impl Handler<ListAdmins> for ConnDsl {
+        type Result = Result<Vec<Admin>, Error>;
+
+        fn handle(&mut self, list_admins: ListAdmins, _: &mut Self::Context) -> Self::Result {
+            use schema::administrators;
+            
+            let conn = &self.0.get().map_err(ErrorInternalServerError)?;
+            let list = administrators::table
+                    .offset(list_admins.page*list_admins.limit)
+                    .limit(list_admins.limit)
+                    .order(administrators::dsl::created_at.asc())
+                    .get_results::<Admin>(conn)
+                    .map_err(negotiate_error)?;
+
+            if list.len() == 0 {
+                Err(ErrorNotFound("Not Found"))
+            } else {
+                Ok(list)
+            }
+
+        }
+
+    }
 
     //-- Create Implementation
     #[derive(Serialize, Deserialize, Debug)]

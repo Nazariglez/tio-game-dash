@@ -54,7 +54,7 @@ impl AuthClaims {
         let secret = tio_config::get().auth.jwt_secret;
         encode(json!({}), &secret, &json!(&self), Algorithm::HS256)
             .map_err(|e|{
-                error!("Can not generate jwt token for {:?}", &self);
+                error!("Can not generate jwt token for {:?}: {:?}", &self, e);
 
                 ErrorInternalServerError("Error generating auth token")
             })

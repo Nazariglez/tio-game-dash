@@ -1,5 +1,5 @@
 use http::*;
-use actix_web::{HttpRequest, HttpMessage};
+use actix_web::{HttpRequest};
 use actix_web::middleware::{Middleware, Started};
 use auth::AuthClaims;
 

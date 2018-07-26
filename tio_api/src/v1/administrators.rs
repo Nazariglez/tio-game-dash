@@ -1,10 +1,61 @@
-use actix_web::{AsyncResponder, Json, State, Path};
+use actix_web::{AsyncResponder, Json, State, Path, FromRequest, Query};
 use futures::Future;
 use futures::future::{err};
 use http::*;
 use tio_db::models::administrators::handlers::*;
 use app::AppState;
 use auth::AuthClaims;
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct ListOptions {
+    pub page: Option<i32>,
+    pub limit: Option<i32>,
+    //pub sort_by: Option<String>
+}
+
+pub fn get_administrators(req: Request) -> Response {
+    let r_opts = Query::<ListOptions>::extract(&req);
+    if let Err(e) = r_opts {
+        return err(ErrorInternalServerError(e)).responder();
+    }
+
+    let opts = r_opts.unwrap();
+    let page = opts.page.unwrap_or(0) as i64;
+    let limit = opts.limit.unwrap_or(20) as i64;
+    //let sort_by = opts.sort_by.clone().unwrap_or("created_at".to_string());
+
+    req.state().db.send(ListAdmins {
+        page: page,
+        limit: limit
+    }).from_err()
+        .and_then(|res| {
+            match res {
+                Ok(list) => Ok(list),
+                Err(e) => Err(e)
+            }
+        })
+        .and_then(move |list| {
+            req.state().db.send(CountAdmins)
+                .from_err()
+                .and_then(move |res|{
+                    match res {
+                        Ok(count) => {
+                            let total_pages = count / limit;
+                            let obj = json!({
+                                //"page" : page,
+                                "total_pages" : total_pages,
+                                "total" : count,
+                                "admins" : list
+                            });
+
+                            Ok(Res::OK(obj))
+                        },
+                        Err(e) => Err(e)
+                    }
+                })
+        })
+        .responder()
+}
 
 pub fn create_admin((data, req) : (Json<CreateAdmin>, Request)) -> Response {
     let mut data = data;

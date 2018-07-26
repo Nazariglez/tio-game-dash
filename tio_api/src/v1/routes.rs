@@ -7,17 +7,18 @@ use middlewares::authentication::IsAdmin;
 
 pub fn get<'a> () -> Vec<(&'a str, fn(&mut Resource<AppState>))> {
     vec![
-        ("/auth/admin/in", |r| {
+        ("/auth/admins/in", |r| {
             r.post().with_async(auth::admin_login);
         }),
 
-        ("/admin", |r| {
+        ("/admins", |r| {
             r.middleware(IsAdmin);
 
+            r.method(Method::GET).with_async(administrators::get_administrators);
             r.method(Method::POST).with_async(administrators::create_admin);
         }),
 
-        ("/admin/{id}", |r| {
+        ("/admins/{id}", |r| {
             r.middleware(IsAdmin);
 
             r.method(Method::GET).with_async(administrators::read_admin);

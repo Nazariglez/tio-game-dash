@@ -5,7 +5,7 @@ use tio_db::{create_pool, DatabaseParams, ConnDsl};
 use num_cpus;
 use tio_config;
 use router;
-use http::{Res, Request, Response, ErrorNotFound, ErrorMethodNotAllowed};
+use http::{Request, Response, ErrorNotFound, ErrorMethodNotAllowed};
 use middlewares::error_handler::{ApiErrorHandler};
 use futures::future::{err};
 
