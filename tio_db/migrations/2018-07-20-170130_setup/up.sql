@@ -99,6 +99,8 @@ CREATE TABLE apps_tags (
     tag_id INTEGER NOT NULL REFERENCES tags(id) ON DELETE CASCADE
 );
 
+-- CREATE TABLE requests //store request, urls, etc... to manage rate_limits
+
 -- password: admin
 INSERT INTO administrators 
     (email, password, created_at, updated_at) 

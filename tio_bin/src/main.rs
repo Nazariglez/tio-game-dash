@@ -27,7 +27,7 @@ fn main() {
     check_db(config.database, true);
 
     let addr = format!("{}:{}", config.server.ip, config.server.port);
-    HttpServer::new(|| app::get())
+    HttpServer::new(|| app::get()) 
         .bind(addr)
         .expect(&format!("Can not bind to port {}", config.server.port))
         .run();
